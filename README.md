@@ -1,6 +1,6 @@
-CMP101 Phase 1: Combinational ALU
+# ALU Project Phase 1: Combinational ALU
 
-Team Members
+## Team Members
 
 Name 1
 
@@ -8,11 +8,15 @@ Name 2
 
 Name 3
 
-Description
+---
+
+## Description
 
 This project is a simple ALU running on a DE1-SoC FPGA.
 
-Features
+---
+
+## Features
 
 4-bit Addition
 
@@ -20,12 +24,4 @@ Features
 
 4-bit Multiplication
 
-4-bit Bitwise XOR (User Choice)
-
-How to Run
-
-Open the project in Quartus Prime.
-
-Compile the ALU_Top module.
-
-Program the DE1-SoC board.
+4-bit Bitwise XOR (User Choice
