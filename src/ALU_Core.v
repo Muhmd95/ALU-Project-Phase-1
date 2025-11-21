@@ -29,12 +29,12 @@ endmodule
 //---------------------------------------------------------
 module Sub4bit(input  [3:0] A,input  [3:0] B,output [3:0] RESULT, output SIGN);
     wire [3:0] B_COMP, FIRST, S_XOR;
-    wire CARRY;
+    wire CARRY, DUMMY;
     assign B_COMP = ~B;
     Add4bit SUBTRACT (.A(A), .B(B_COMP),.CIN(1'b1), .SUM(FIRST), .COUT(CARRY));
     assign SIGN = ~CARRY;
     assign S_XOR = FIRST ^ {4{SIGN}};
-    Add4bit COMPLEMENT (.A(4'b0000), .B(S_XOR),.CIN(SIGN), .SUM(RESULT));
+    Add4bit COMPLEMENT (.A(4'b0000), .B(S_XOR),.CIN(SIGN), .SUM(RESULT), .COUT(DUMMY));
 endmodule
 
 
