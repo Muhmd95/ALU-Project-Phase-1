@@ -2,11 +2,13 @@
 
 ## Team Members
 
-Name 1
+Mohamed Osama
 
-Name 2
+Yousuf Safwat
 
-Name 3
+Yousef Sayed 
+
+Yasmine Ismail
 
 ---
 
