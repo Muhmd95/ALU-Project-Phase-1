@@ -1,12 +1,29 @@
-module ALU_Top (
-    input  [9:0] SW,   // The 10 Switches on the board
-    output [9:0] LEDR  // The 10 Red LEDs on the board
+//---------------------------------------------------------
+// ALU_Top Template
+// Connects FPGA switches to ALU core
+//---------------------------------------------------------
+module ALU_Top(
+    input  [9:0] SW,
+    output [7:0] LEDR
 );
 
-    // TODO: Declare wires to split SW into A, B, and OpCode
+    // Input assignments
+    wire [3:0] A  = SW[3:0];
+    wire [3:0] B  = SW[7:4];
+    wire [1:0] OP = SW[9:8];
 
-    // TODO: Instantiate your ALU_Core here
+    // Output wire
+    wire [7:0] Y;
 
-    // TODO: Connect the ALU output to LEDR
+    // Instantiate the ALU Core
+    ALU_Core core_unit (
+        .A(A),
+        .B(B),
+        .OP(OP),
+        .Y(Y)
+    );
+
+    // Drive the LEDs
+    assign LEDR = Y;
 
 endmodule

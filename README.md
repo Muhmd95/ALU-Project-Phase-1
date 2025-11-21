@@ -24,4 +24,4 @@ This project is a simple ALU running on a DE1-SoC FPGA.
 
 4-bit Multiplication
 
-4-bit Bitwise XOR (User Choice
+4-STILL NOT CHOSEN
