@@ -43,7 +43,20 @@ endmodule
 // TODO: 3. MULTIPLIER MODULE (4x4 → 8 bits)
 //---------------------------------------------------------
 module Mul4bit(input  [3:0] A,input  [3:0] B,output [7:0] Y);
-    // TODO: implement multiplication logic here
+    wire[3:0] MULTI0, MULTI1, MULTI2, MULTI3, OUT0, OUT1, OUT2;
+    wire C0, C1, C2;
+
+    assign MULTI0 = {1'b0, A[3] & B[0], A[2] & B[0], A[1] & B[0]};
+    assign MULTI1 = {A[3] & B[1], A[2] & B[1], A[1] & B[1], A[0] & B[1]};
+    assign MULTI2 = {A[3] & B[2], A[2] & B[2], A[1] & B[2], A[0] & B[2]};
+    assign MULTI3 = {A[3] & B[3], A[2] & B[3], A[1] & B[3], A[0] & B[3]};
+
+    four_bit_adder f1 (MULTI0, MULTI1, 0, OUT0, C0);
+    four_bit_adder f2 ({C0, OUT0[3:1]}, MULTI2, 0, OUT1, C1);
+    four_bit_adder f3 ({C1, OUT1[3:1]}, MULTI3, 0, OUT2, C2);
+
+    assign Y = {C2, OUT2, OUT1[0], OUT0[0], A[0] & B[0]};
+
 endmodule
 
 
@@ -65,7 +78,7 @@ module ALU_Core(input[3:0] A,input[3:0] B,input[1:0] OP,output reg [7:0] Y);
     // Wires to hold module outputs
     wire [3:0] add_out;
     wire [3:0] sub_out;
-    wire [3:0] mul_out;
+    wire [7:0] mul_out;
     wire [3:0] op4_out;
     wire COUT,SIGN;
 
