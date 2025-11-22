@@ -51,9 +51,9 @@ module Mul4bit(input  [3:0] A,input  [3:0] B,output [7:0] Y);
     assign MULTI2 = {A[3] & B[2], A[2] & B[2], A[1] & B[2], A[0] & B[2]};
     assign MULTI3 = {A[3] & B[3], A[2] & B[3], A[1] & B[3], A[0] & B[3]};
 
-    four_bit_adder f1 (MULTI0, MULTI1, 0, OUT0, C0);
-    four_bit_adder f2 ({C0, OUT0[3:1]}, MULTI2, 0, OUT1, C1);
-    four_bit_adder f3 ({C1, OUT1[3:1]}, MULTI3, 0, OUT2, C2);
+    Add4bit M1 (MULTI0, MULTI1, 0, OUT0, C0);
+    Add4bit M2 ({C0, OUT0[3:1]}, MULTI2, 0, OUT1, C1);
+    Add4bit M3 ({C1, OUT1[3:1]}, MULTI3, 0, OUT2, C2);
 
     assign Y = {C2, OUT2, OUT1[0], OUT0[0], A[0] & B[0]};
 
