@@ -60,12 +60,15 @@ module Mul4bit(input  [3:0] A,input  [3:0] B,output [7:0] Y);
 endmodule
 
 
+//==============================
+// DONE: 4. AVERAGE MODULE (A + B >> 1)
+//==============================
+module Average4bit(input[3:0] A,input[3:0] B,output[3:0] avg);
+    wire cout;
+    wire [3:0] sum;
 
-//---------------------------------------------------------
-// TODO: 4. FOURTH OPERATION MODULE
-//---------------------------------------------------------
-module Op4(input  [3:0] A,input  [3:0] B,output [7:0] Y); // keep B input even if unused
-    // TODO: implement your 4th operation here
+    Add4bit ADD(A, B, 1'b0, sum, cout);
+    assign avg = {cout, sum[3:1]};
 endmodule
 
 
@@ -79,14 +82,14 @@ module ALU_Core(input[3:0] A,input[3:0] B,input[1:0] OP,output reg [7:0] Y);
     wire [3:0] add_out;
     wire [3:0] sub_out;
     wire [7:0] mul_out;
-    wire [3:0] op4_out;
+    wire [3:0] avg_out;
     wire COUT,SIGN;
 
     // Instantiate submodules
     Add4bit u_add (.A(A), .B(B), .CIN(1'b0), .SUM(add_out), .COUT(COUT));
     Sub4bit u_sub (.A(A), .B(B), .RESULT(sub_out), .SIGN(SIGN));
     Mul4bit u_mul (.A(A), .B(B), .Y(mul_out));
-    Op4     u_op4 (.A(A), .B(B), .Y(op4_out));
+    Average4bit u_avg (.A(A), .B(B), .avg(avg_out));
 
 
 
@@ -99,7 +102,7 @@ module ALU_Core(input[3:0] A,input[3:0] B,input[1:0] OP,output reg [7:0] Y);
             2'b00: Y = {3'b000,COUT,add_out};   // addition
             2'b01: Y = {3'b000,SIGN,sub_out};   // subtraction
             2'b10: Y = mul_out;   // multiplication
-            2'b11: Y = op4_out;   // your 4th operation
+            2'b11: Y = {4'b0000,avg_out};   // average 
             default: Y = 8'b0;
         endcase
     end
