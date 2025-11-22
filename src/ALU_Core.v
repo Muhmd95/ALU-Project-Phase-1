@@ -7,7 +7,7 @@
 
 
 //---------------------------------------------------------
-// TODO: 1. ADDER MODULE (4-bit to 8-bit)
+// DONE: 1. ADDER MODULE (4-bit to 8-bit)
 //---------------------------------------------------------
 module Add1bit(input A,input B,input CIN,output SUM,output COUT);
     assign SUM = A^B^CIN;
@@ -25,7 +25,7 @@ endmodule
 
 
 //---------------------------------------------------------
-// TODO: 2. SUBTRACTOR MODULE (A - B)
+// DONE: 2. SUBTRACTOR MODULE (A - B)
 //---------------------------------------------------------
 module Sub4bit(input  [3:0] A,input  [3:0] B,output [3:0] RESULT, output SIGN);
     wire [3:0] B_COMP, FIRST, S_XOR;
@@ -40,7 +40,7 @@ endmodule
 
 
 //---------------------------------------------------------
-// TODO: 3. MULTIPLIER MODULE (4x4 → 8 bits)
+// DONE: 3. MULTIPLIER MODULE (4x4 → 8 bits)
 //---------------------------------------------------------
 module Mul4bit(input  [3:0] A,input  [3:0] B,output [7:0] Y);
     wire[3:0] MULTI0, MULTI1, MULTI2, MULTI3, OUT0, OUT1, OUT2;
@@ -51,9 +51,9 @@ module Mul4bit(input  [3:0] A,input  [3:0] B,output [7:0] Y);
     assign MULTI2 = {A[3] & B[2], A[2] & B[2], A[1] & B[2], A[0] & B[2]};
     assign MULTI3 = {A[3] & B[3], A[2] & B[3], A[1] & B[3], A[0] & B[3]};
 
-    Add4bit M1 (MULTI0, MULTI1, 0, OUT0, C0);
-    Add4bit M2 ({C0, OUT0[3:1]}, MULTI2, 0, OUT1, C1);
-    Add4bit M3 ({C1, OUT1[3:1]}, MULTI3, 0, OUT2, C2);
+    Add4bit M1 (.A(MULTI0), .B(MULTI1), .CIN(0), .SUM(OUT0), .COUT(C0));
+    Add4bit M2 (.A({C0, OUT0[3:1]}), .B(MULTI2), .CIN(0), .SUM(OUT1), .COUT(C1));
+    Add4bit M3 (.A({C1, OUT1[3:1]}), .B(MULTI3), .CIN(0), .SUM(OUT2), .COUT(C2));
 
     assign Y = {C2, OUT2, OUT1[0], OUT0[0], A[0] & B[0]};
 
