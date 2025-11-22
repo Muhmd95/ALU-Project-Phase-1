@@ -60,7 +60,7 @@ endmodule
 //---------------------------------------------------------
 // MAIN ALU CORE
 //---------------------------------------------------------
-module ALU_Core(input[3:0] A,input[3:0] B,input[1:0] OP,input CIN,output reg [7:0] Y);
+module ALU_Core(input[3:0] A,input[3:0] B,input[1:0] OP,output reg [7:0] Y);
 
     // Wires to hold module outputs
     wire [3:0] add_out;
