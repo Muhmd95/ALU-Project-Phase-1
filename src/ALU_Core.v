@@ -1,8 +1,8 @@
 //---------------------------------------------------------
-// ALU_Core Template 
+// ALU_Core FILE 
 //---------------------------------------------------------
-// All operation modules go here.
-// TODO markers show where you must add your logic.
+// ALL OPERATIONS MODULE.
+// IF MAKE ANY MODULE MARK IT AS DONE.
 //---------------------------------------------------------
 
 
@@ -25,7 +25,7 @@ endmodule
 
 
 //---------------------------------------------------------
-// DONE: 2. SUBTRACTOR MODULE (A - B)
+// DONE: 2. SIGNED SUBTRACTOR MODULE (A - B)
 //---------------------------------------------------------
 module Sub4bit(input  [3:0] A,input  [3:0] B,output [3:0] RESULT, output SIGN);
     wire [3:0] B_COMP, FIRST, S_XOR;
@@ -51,9 +51,9 @@ module Mul4bit(input  [3:0] A,input  [3:0] B,output [7:0] Y);
     assign MULTI2 = {A[3] & B[2], A[2] & B[2], A[1] & B[2], A[0] & B[2]};
     assign MULTI3 = {A[3] & B[3], A[2] & B[3], A[1] & B[3], A[0] & B[3]};
 
-    Add4bit M1 (.A(MULTI0), .B(MULTI1), .CIN(0), .SUM(OUT0), .COUT(C0));
-    Add4bit M2 (.A({C0, OUT0[3:1]}), .B(MULTI2), .CIN(0), .SUM(OUT1), .COUT(C1));
-    Add4bit M3 (.A({C1, OUT1[3:1]}), .B(MULTI3), .CIN(0), .SUM(OUT2), .COUT(C2));
+    Add4bit M1 (.A(MULTI0), .B(MULTI1), .CIN(1'b0), .SUM(OUT0), .COUT(C0));
+    Add4bit M2 (.A({C0, OUT0[3:1]}), .B(MULTI2), .CIN(1'b0), .SUM(OUT1), .COUT(C1));
+    Add4bit M3 (.A({C1, OUT1[3:1]}), .B(MULTI3), .CIN(1'b0), .SUM(OUT2), .COUT(C2));
 
     assign Y = {C2, OUT2, OUT1[0], OUT0[0], A[0] & B[0]};
 
@@ -63,7 +63,7 @@ endmodule
 //==============================
 // DONE: 4. AVERAGE MODULE (A + B >> 1)
 //==============================
-module Average4bit(input[3:0] A,input[3:0] B,output[3:0] avg);
+module Average4bit(input [3:0] A,input [3:0] B,output [3:0] avg);
     wire cout;
     wire [3:0] sum;
 
@@ -76,16 +76,15 @@ endmodule
 //---------------------------------------------------------
 // MAIN ALU CORE
 //---------------------------------------------------------
-module ALU_Core(input[3:0] A,input[3:0] B,input[1:0] OP,output reg [7:0] Y);
+module ALU_Core(input[3:0] A, input[3:0] B, input[1:0] OP, output reg [7:0] Y);
 
-    // Wires to hold module outputs
     wire [3:0] add_out;
     wire [3:0] sub_out;
     wire [7:0] mul_out;
     wire [3:0] avg_out;
-    wire COUT,SIGN;
+    wire COUT, SIGN;
 
-    // Instantiate submodules
+    //INSTANT MODULES
     Add4bit u_add (.A(A), .B(B), .CIN(1'b0), .SUM(add_out), .COUT(COUT));
     Sub4bit u_sub (.A(A), .B(B), .RESULT(sub_out), .SIGN(SIGN));
     Mul4bit u_mul (.A(A), .B(B), .Y(mul_out));
@@ -94,8 +93,7 @@ module ALU_Core(input[3:0] A,input[3:0] B,input[1:0] OP,output reg [7:0] Y);
 
 
     //-----------------------------------------------------
-    // IMPORTANT: ALWAYS BLOCK GOES HERE
-    // This selects which operation goes to output Y
+    // AlWAYS BLOCK
     //-----------------------------------------------------
     always @(*) begin
         case (OP)
