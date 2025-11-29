@@ -63,12 +63,12 @@ endmodule
 //==============================
 // DONE: 4. AVERAGE MODULE (A + B >> 1)
 //==============================
-module Average4bit(input [3:0] A,input [3:0] B,output [3:0] avg);
+module Average4bit(input [3:0] A,input [3:0] B,output [7:0] avg);
     wire cout;
     wire [3:0] sum;
 
     Add4bit ADD(A, B, 1'b0, sum, cout);
-    assign avg = {cout, sum[3:1]};
+    assign avg = {sum[0],3'b000,cout, sum[3:1]};
 endmodule
 
 
@@ -81,7 +81,7 @@ module ALU_Core(input[3:0] A, input[3:0] B, input[1:0] OP, output reg [7:0] Y);
     wire [3:0] add_out;
     wire [3:0] sub_out;
     wire [7:0] mul_out;
-    wire [3:0] avg_out;
+    wire [7:0] avg_out;
     wire COUT, SIGN;
 
     //INSTANT MODULES
@@ -100,7 +100,7 @@ module ALU_Core(input[3:0] A, input[3:0] B, input[1:0] OP, output reg [7:0] Y);
             2'b00: Y = {3'b000,COUT,add_out};   // addition
             2'b01: Y = {3'b000,SIGN,sub_out};   // subtraction
             2'b10: Y = mul_out;   // multiplication
-            2'b11: Y = {4'b0000,avg_out};   // average 
+            2'b11: Y = avg_out;   // average 
             default: Y = 8'b0;
         endcase
     end
