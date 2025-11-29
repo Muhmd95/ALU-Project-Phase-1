@@ -28,7 +28,7 @@ The ALU can do four things:
 1. **Addition** - Adds two 4-bit numbers and gives a 5-bit result (includes carry bit)
 2. **Subtraction** - Subtracts one 4-bit number from another and shows the sign
 3. **Multiplication** - Multiplies two 4-bit numbers to get an 8-bit result
-4. **Average** - Calculates the average of two numbers, rounded down
+4. **Average** - Calculates the average of two numbers
 
 ---
 
@@ -52,10 +52,10 @@ The ALU can do four things:
 - **LEDR[7:0]** - Shows the 8-bit result
 
 The way results are displayed depends on the operation:
-- **Addition:** Upper 3 bits are zero, bit 4 shows carry-out, lower 4 bits show the sum
-- **Subtraction:** Upper 3 bits are zero, bit 4 shows the sign (1 for negative), lower 4 bits show the magnitude
+- **Addition:** Upper 3 bits are zero, 5th bit shows carry-out, lower 4 bits show the sum
+- **Subtraction:** 8th bit shows the sign (1 for negative), lower 4 bits show the magnitude
 - **Multiplication:** All 8 bits are used for the product
-- **Average:** Upper 4 bits are zero, lower 4 bits show the average
+- **Average:** 8th bit is a "half bit", lower 4 bits show the average
 
 ---
 
@@ -90,7 +90,7 @@ This is the foundation for everything. It takes three inputs (two bits plus a ca
 - Sum = A XOR B XOR Carry_in
 - Carry_out = (A AND B) OR (A AND Carry_in) OR (B AND Carry_in)
 
-![1-bit Full Adder Circuit](image1.png)
+![1-bit Full Adder Circuit](Block-diagrams/1bitFulladder.png)
 *Figure 1: 1-bit full adder schematic showing XOR and AND gates*
 
 
@@ -98,7 +98,7 @@ This is the foundation for everything. It takes three inputs (two bits plus a ca
 
 We connected four 1-bit adders in a chain where the carry-out of each adder feeds into the carry-in of the next one. This is called a ripple carry adder because the carry "ripples" through from right to left.
 
-![4-bit Ripple Carry Adder](image2.png)
+![4-bit Ripple Carry Adder](Block-diagrams/4bitFulladder.png)
 *Figure 2: 4-bit ripple carry adder showing the chain of four 1-bit full adders with carry propagation*
 
 For example: 10 + 6 = 16
@@ -118,7 +118,7 @@ We implemented subtraction using the 2's complement method. The module computes 
 
 The key challenge is handling negative results. When A < B, the result is negative and comes out in 2's complement form. We detect this by checking the carry-out bit - no carry means the result is negative. For negative results, we convert back to magnitude form by taking the 2's complement again and setting a sign bit.
 
-![4-bit Subtractor Block Diagram](image4.png)
+![4-bit Subtractor Block Diagram](Block-diagrams/4bitSubtractor.png)
 *Figure 3: Subtractor block diagram showing 2's complement logic and conditional complement*
 
 **Example:** 3 - 9 = -6 gives output 00010110 (bit 4 is the sign bit, lower 4 bits show magnitude 6)
@@ -136,7 +136,7 @@ We built an array multiplier that generates partial products and adds them toget
 
 We use 16 AND gates (4×4 grid) to generate all partial products simultaneously, then three 4-bit adders to sum them progressively. The output is 8 bits since 4-bit × 4-bit can produce up to 8 bits (max: 15 × 15 = 225).
 
-![4x4 Multiplier](image3.png)
+![4x4 Multiplier](Block-diagrams/4bitMultiplier.png)
 *Figure 4: 4×4 array multiplier showing AND gate array and cascade of adders*
 
 **Example:** 5 × 3 = 15
@@ -156,7 +156,7 @@ This module computes the floor of (A + B) / 2. We use a 4-bit adder to get a 5-b
 
 In binary, dividing by 2 is just a right shift - we take bits [4:1] of the 5-bit sum and output them as the 4-bit average. The least significant bit is discarded, which gives us the floor function automatically.
 
-![Average Calculator](image5.png)
+![Average Calculator](Block-diagrams/Average4bit.png)
 *Figure 5: Average module showing adder output concatenation and right shift*
 
 **Example:** (10 + 6) / 2 = 8
@@ -166,7 +166,7 @@ In binary, dividing by 2 is just a right shift - we take bits [4:1] of the 5-bit
 **Test Cases:**
 - (10 + 6) / 2 = 8 (expected: 00001000)
 - (15 + 15) / 2 = 15 (expected: 00001111)
-- (1 + 0) / 2 = 0 rounds down (expected: 00000000)
+- (1 + 0) / 2 = 0 (expected: 10000000)   //the 8th bit indicates the half
 
 ---
 
@@ -186,11 +186,9 @@ The most challenging part was probably the subtractor because we had to properly
 
 ## References
 
-1. "Digital Design and Computer Architecture" by Harris & Harris
-2. "Digital Design" by Morris Mano
-3. Intel DE1-SoC User Manual
-4. Verilog HDL Reference Manual
-5. Nandland website for Verilog tutorials
+1. Intel DE1-SoC User Manual
+2. Verilog HDL Reference Manual
+3. Nandland website for Verilog tutorials
 
 ---
 
