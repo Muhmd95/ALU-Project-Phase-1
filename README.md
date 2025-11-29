@@ -4,8 +4,6 @@ Course: CMP 101 - Logic Design
 Institution: Cairo University - Faculty of Engineering - Computer Engineering Department
 Academic Year: 1st Year
 
-------------------------------------------------------------
-
 Team Members:
 - Mohamed Osama
 - Yousuf Safwat
@@ -20,7 +18,7 @@ The ALU takes two 4-bit numbers as inputs through switches on the board and perf
 displaying the result on LEDs.
 
 ------------------------------------------------------------
-Operations (4 Total)
+Operations 
 ------------------------------------------------------------
 1. Addition
    - Adds two 4-bit numbers.
@@ -47,7 +45,7 @@ Operations (4 Total)
    - Internally: add → right shift → output.
 
 ------------------------------------------------------------
-Internal Tool Used by Most Operations (Not an Operation)
+Internal Tool Used by Most Operations 
 ------------------------------------------------------------
 Full Adder / Ripple-Carry Adder
 - The 1-bit full adder and 4-bit ripple adder are NOT operations.
@@ -62,23 +60,33 @@ The full adder is just a tool the ALU uses to build real operations.
 ------------------------------------------------------------
 Inputs (Switches)
 ------------------------------------------------------------
+
 SW[3:0]  → A (first number)
+
 SW[7:4]  → B (second number)
+
 SW[9:8]  → Operation selector
 
-Operation Select Codes:
+#### Operation Select Codes:
+
 00 → Addition
+
 01 → Subtraction
+
 10 → Multiplication
+
 11 → Average
 
 ------------------------------------------------------------
 Output (LEDs)
 ------------------------------------------------------------
+
 LEDR[3:0]   → Main result (lower bits)
+
 LEDR[7:4]   → Upper bits (used in multiplication only)
+
 LEDR[8]     → Special flag depending on operation:
-              • Addition  → Carry-out
+
               • Subtraction → Sign bit (1 = negative)
               • Multiplication → Not used
               • Average → Carry-out from A+B
@@ -100,6 +108,4 @@ References
 4. Verilog HDL Reference Manual
 5. Nandland Verilog Tutorials
 
-------------------------------------------------------------
-
-## Version: 1.0
+Version: 1.0
