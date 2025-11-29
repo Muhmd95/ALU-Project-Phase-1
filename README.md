@@ -1,17 +1,12 @@
 # ALU Project - Phase 1
 
-**Course:** CMP 101 - Logic Design<br>
-**Institution:** Cairo University - Faculty of Engineering - Computer Engineering Department<br>
-**Academic Year:** 1st Year<br>
-**Deadline:** Monday, December 1, 2025
+**Course:** CMP 101 - Logic Design  
+**Institution:** Cairo University - Faculty of Engineering - Computer Engineering Department  
+**Academic Year:** 1st Year  
 
 ---
 
-## 📋 Project Overview
-
-This project implements a **4-bit Arithmetic Logic Unit (ALU)** using Verilog HDL, designed for deployment on the DE1-SoC FPGA development board. The ALU performs four different operations on two 4-bit operands, with inputs controlled via onboard switches and outputs displayed on LEDs.
-
-### 👥 Team Members
+## Team Members
 
 - Mohamed Osama
 - Yousuf Safwat
@@ -20,334 +15,185 @@ This project implements a **4-bit Arithmetic Logic Unit (ALU)** using Verilog HD
 
 ---
 
-## 🎯 Features
+## What This Project Does
 
-The ALU supports **four operations**:
-
-1. **Addition** (4-bit + 4-bit → 5-bit result with carry)
-2. **Subtraction** (4-bit - 4-bit → 4-bit result with sign)
-3. **Multiplication** (4-bit × 4-bit → 8-bit result)
-4. **Average** (⌊(A + B) / 2⌋ → 4-bit result)
+We built a 4-bit Arithmetic Logic Unit (ALU) using Verilog HDL that runs on the DE1-SoC FPGA board. The ALU takes two 4-bit numbers as inputs through switches on the board and performs one of four operations, displaying the result on LEDs.
 
 ---
 
-## 🔌 Hardware Interface
+## Operations
 
-### Input Mapping (10 Switches)
-| Switch Range | Purpose | Description |
-|--------------|---------|-------------|
-| `SW[3:0]` | Operand A | First 4-bit input |
-| `SW[7:4]` | Operand B | Second 4-bit input |
-| `SW[9:8]` | Operation Select | 2-bit operation code |
+The ALU can do four things:
 
-### Operation Selection
-| `SW[9:8]` | Operation | Output Format |
-|-----------|-----------|---------------|
-| `00` | Addition | `{000, COUT, SUM[3:0]}` |
-| `01` | Subtraction | `{000, SIGN, RESULT[3:0]}` |
-| `10` | Multiplication | `PRODUCT[7:0]` |
-| `11` | Average | `{0000, AVG[3:0]}` |
-
-### Output Mapping (8 LEDs)
-| LED Range | Purpose |
-|-----------|---------|
-| `LEDR[7:0]` | 8-bit result output |
+1. **Addition** - Adds two 4-bit numbers and gives a 5-bit result (includes carry bit)
+2. **Subtraction** - Subtracts one 4-bit number from another and shows the sign
+3. **Multiplication** - Multiplies two 4-bit numbers to get an 8-bit result
+4. **Average** - Calculates the average of two numbers, rounded down
 
 ---
 
-## 🏗️ Architecture & Design
+## How to Use the Board
 
-### System Block Diagram
+### Inputs (Switches)
 
-> 🖼️ **[INSERT IMAGE: Top-level ALU system diagram showing SW inputs, ALU_Top, ALU_Core, and LEDR outputs]**
+- **SW[3:0]** - First number (A)
+- **SW[7:4]** - Second number (B)
+- **SW[9:8]** - Operation selector
 
-### Module Hierarchy
+### Selecting Operations
 
-```
-ALU_Top (Top-level wrapper)
-    └── ALU_Core (Main ALU logic)
-            ├── Add4bit (4-bit Adder)
-            │     └── Add1bit (1-bit Full Adder) × 4
-            ├── Sub4bit (4-bit Subtractor)
-            │     └── Add4bit (for 2's complement)
-            ├── Mul4bit (4-bit Multiplier)
-            │     └── Add4bit (for partial product addition) × 3
-            └── Average4bit (Average Calculator)
-                  └── Add4bit (for sum, then shift right)
-```
+- **SW[9:8] = 00** - Addition
+- **SW[9:8] = 01** - Subtraction
+- **SW[9:8] = 10** - Multiplication
+- **SW[9:8] = 11** - Average
 
----
+### Output (LEDs)
 
-## 🔧 Module Descriptions
+- **LEDR[7:0]** - Shows the 8-bit result
 
-### 1. **1-bit Full Adder (`Add1bit`)**
-
-**Purpose:** Basic building block for all arithmetic operations.
-
-**Logic:**
-- `SUM = A ⊕ B ⊕ CIN`
-- `COUT = (A·B) + (A·CIN) + (B·CIN)`
-
-**Circuit Diagram:**
-
-> 🖼️ **[INSERT IMAGE: 1-bit full adder schematic with XOR and AND gates]**
-
-**Truth Table:**
-| A | B | CIN | SUM | COUT |
-|---|---|-----|-----|------|
-| 0 | 0 | 0   | 0   | 0    |
-| 0 | 0 | 1   | 1   | 0    |
-| 0 | 1 | 0   | 1   | 0    |
-| 0 | 1 | 1   | 0   | 1    |
-| 1 | 0 | 0   | 1   | 0    |
-| 1 | 0 | 1   | 0   | 1    |
-| 1 | 1 | 0   | 0   | 1    |
-| 1 | 1 | 1   | 1   | 1    |
+The way results are displayed depends on the operation:
+- **Addition:** Upper 3 bits are zero, bit 4 shows carry-out, lower 4 bits show the sum
+- **Subtraction:** Upper 3 bits are zero, bit 4 shows the sign (1 for negative), lower 4 bits show the magnitude
+- **Multiplication:** All 8 bits are used for the product
+- **Average:** Upper 4 bits are zero, lower 4 bits show the average
 
 ---
 
-### 2. **4-bit Ripple Carry Adder (`Add4bit`)**
+## How We Built It
 
-**Purpose:** Adds two 4-bit numbers with carry propagation.
+### Module Structure
 
-**Implementation:** Cascaded chain of four 1-bit full adders.
+We organized the code into several modules that build on each other:
 
-**Circuit Diagram:**
+**ALU_Top** - Top level module that connects to the FPGA switches and LEDs
 
-> 🖼️ **[INSERT IMAGE: 4-bit ripple carry adder showing carry chain c0→c1→c2→COUT]**
+**ALU_Core** - Main logic that selects which operation to perform
 
-**Example:**
-- Input: `A = 4'b1010 (10)`, `B = 4'b0110 (6)`, `CIN = 0`
-- Output: `SUM = 4'b0000 (0)`, `COUT = 1` → Result: 16
+**Add1bit** - A single 1-bit full adder (the basic building block)
 
----
+**Add4bit** - A 4-bit adder made from four 1-bit adders chained together
 
-### 3. **4-bit Subtractor (`Sub4bit`)**
+**Sub4bit** - Handles subtraction using 2's complement method
 
-**Purpose:** Computes A - B using 2's complement method with sign handling.
+**Mul4bit** - Multiplies numbers using partial products
 
-**Algorithm:**
-1. Compute 1's complement of B: `B_COMP = ~B`
-2. Add A + B_COMP + 1 (2's complement subtraction)
-3. Check carry output: `SIGN = ~CARRY` (1 if result is negative)
-4. If negative, convert result to magnitude using 2's complement
-
-**Circuit Diagram:**
-
-> 🖼️ **[INSERT IMAGE: Subtractor block diagram showing 2's complement logic and conditional complement]**
-
-**Example Cases:**
-- **Positive Result:** `A=9, B=3` → `RESULT=6, SIGN=0`
-- **Negative Result:** `A=3, B=9` → `RESULT=6, SIGN=1` (represents -6)
+**Average4bit** - Adds two numbers and divides by 2
 
 ---
 
-### 4. **4-bit Multiplier (`Mul4bit`)**
+## Technical Details
 
-**Purpose:** Multiplies two 4-bit numbers producing an 8-bit result.
+### 1-bit Full Adder
 
-**Implementation:** Array multiplier using partial products.
+This is the foundation for everything. It takes three inputs (two bits plus a carry-in) and produces a sum and carry-out. We used the standard logic equations:
 
-**Algorithm:**
-1. Generate 4 partial products using AND gates
-2. Align partial products by shifting
-3. Add partial products using three 4-bit adders
+- Sum = A XOR B XOR Carry_in
+- Carry_out = (A AND B) OR (A AND Carry_in) OR (B AND Carry_in)
 
-**Partial Products:**
-```
-      A3 A2 A1 A0
-    × B3 B2 B1 B0
-    ─────────────
-      A3B0 A2B0 A1B0 A0B0  (MULTI0)
-   A3B1 A2B1 A1B1 A0B1     (MULTI1)
- A3B2 A2B2 A1B2 A0B2       (MULTI2)
-A3B3 A2B3 A1B3 A0B3        (MULTI3)
-```
+![1-bit Full Adder Circuit](image1.png)
+*Figure 1: 1-bit full adder schematic showing XOR and AND gates*
 
-**Circuit Diagram:**
 
-> 🖼️ **[INSERT IMAGE: 4x4 array multiplier showing AND gate array and adder tree]**
+### 4-bit Ripple Carry Adder
 
-**Example:**
-- Input: `A = 4'b0101 (5)`, `B = 4'b0011 (3)`
-- Output: `Y = 8'b00001111 (15)`
+We connected four 1-bit adders in a chain where the carry-out of each adder feeds into the carry-in of the next one. This is called a ripple carry adder because the carry "ripples" through from right to left.
 
----
+![4-bit Ripple Carry Adder](image2.png)
+*Figure 2: 4-bit ripple carry adder showing the chain of four 1-bit full adders with carry propagation*
 
-### 5. **Average Calculator (`Average4bit`)**
+For example: 10 + 6 = 16
+- A = 1010, B = 0110
+- Result = 10000 (the fifth bit is the final carry-out)
 
-**Purpose:** Computes the average of two 4-bit numbers: ⌊(A + B) / 2⌋
-
-**Algorithm:**
-1. Add A + B using 4-bit adder (produces 5-bit sum with carry)
-2. Shift right by 1 position (divide by 2): `{COUT, SUM[3:1]}`
-
-**Circuit Diagram:**
-
-> 🖼️ **[INSERT IMAGE: Average module showing adder and right shift operation]**
-
-**Example:**
-- Input: `A = 4'b1010 (10)`, `B = 4'b0110 (6)`
-- Sum: `5'b10000 (16)`
-- Average: `4'b1000 (8)`
+**Test Cases:**
+- 5 + 3 = 8 (expected: 00001000)
+- 15 + 1 = 16 with carry (expected: 00010000)
+- 15 + 15 = 30 (expected: 00011110)
 
 ---
 
-### 6. **ALU Core (`ALU_Core`)**
+### 4-bit Subtractor
 
-**Purpose:** Main control unit that selects operation based on OP input.
+We implemented subtraction using the 2's complement method. The module computes A - B by taking the 2's complement of B (flip all bits and add 1) and adding it to A.
 
-**Implementation:** Uses a multiplexer (case statement) to route the selected operation to output.
+The key challenge is handling negative results. When A < B, the result is negative and comes out in 2's complement form. We detect this by checking the carry-out bit - no carry means the result is negative. For negative results, we convert back to magnitude form by taking the 2's complement again and setting a sign bit.
 
-**Block Diagram:**
+![4-bit Subtractor Block Diagram](image4.png)
+*Figure 3: Subtractor block diagram showing 2's complement logic and conditional complement*
 
-> 🖼️ **[INSERT IMAGE: ALU_Core showing all operation modules feeding into 4:1 MUX controlled by OP]**
+**Example:** 3 - 9 = -6 gives output 00010110 (bit 4 is the sign bit, lower 4 bits show magnitude 6)
 
-**Control Logic:**
-```verilog
-case (OP)
-    2'b00: Addition
-    2'b01: Subtraction
-    2'b10: Multiplication
-    2'b11: Average
-endcase
-```
+**Test Cases:**
+- 9 - 3 = 6 positive result (expected: 00000110)
+- 3 - 9 = -6 negative result, sign bit = 1 (expected: 00010110)
+- 5 - 5 = 0 (expected: 00000000)
 
 ---
 
-## 📊 Testing & Validation
+### 4-bit Multiplier
 
-### Test Cases
+We built an array multiplier that generates partial products and adds them together. For each bit in B, we AND it with all bits of A to create a partial product. Each partial product is shifted left by one position relative to the previous one.
 
-#### Addition Tests
-| A (SW[3:0]) | B (SW[7:4]) | OP | Expected Output | Notes |
-|-------------|-------------|----|--------------------|-------|
-| `0101` (5) | `0011` (3) | `00` | `00001000` (8) | Basic addition |
-| `1111` (15) | `0001` (1) | `00` | `00010000` (16) | Carry generation |
-| `1111` (15) | `1111` (15) | `00` | `00011110` (30) | Maximum sum |
+We use 16 AND gates (4×4 grid) to generate all partial products simultaneously, then three 4-bit adders to sum them progressively. The output is 8 bits since 4-bit × 4-bit can produce up to 8 bits (max: 15 × 15 = 225).
 
-#### Subtraction Tests
-| A (SW[3:0]) | B (SW[7:4]) | OP | Expected Output | Notes |
-|-------------|-------------|----|--------------------|-------|
-| `1001` (9) | `0011` (3) | `01` | `00000110` (6) | Positive result |
-| `0011` (3) | `1001` (9) | `01` | `00010110` (6 w/ sign) | Negative result (-6) |
-| `0101` (5) | `0101` (5) | `01` | `00000000` (0) | Zero result |
+![4x4 Multiplier](image3.png)
+*Figure 4: 4×4 array multiplier showing AND gate array and cascade of adders*
 
-#### Multiplication Tests
-| A (SW[3:0]) | B (SW[7:4]) | OP | Expected Output | Notes |
-|-------------|-------------|----|--------------------|-------|
-| `0101` (5) | `0011` (3) | `10` | `00001111` (15) | Basic multiplication |
-| `1111` (15) | `1111` (15) | `10` | `11100001` (225) | Maximum product |
-| `0000` (0) | `1111` (15) | `10` | `00000000` (0) | Zero multiplication |
+**Example:** 5 × 3 = 15
+- Generates partial products based on bits of B
+- Adds them with proper alignment to get 00001111
 
-#### Average Tests
-| A (SW[3:0]) | B (SW[7:4]) | OP | Expected Output | Notes |
-|-------------|-------------|----|--------------------|-------|
-| `1010` (10) | `0110` (6) | `11` | `00001000` (8) | Even average |
-| `1111` (15) | `1111` (15) | `11` | `00001111` (15) | Same values |
-| `0001` (1) | `0000` (0) | `11` | `00000000` (0) | Floor division |
-
-### FPGA Testing Procedure
-
-> 🖼️ **[INSERT IMAGE: Photo of DE1-SoC board with labeled switches and LEDs]**
-
-1. Upload the compiled `.sof` file to the DE1-SoC board
-2. Set operands using `SW[3:0]` and `SW[7:4]`
-3. Select operation using `SW[9:8]`
-4. Read result from `LEDR[7:0]`
-5. Verify against expected values
+**Test Cases:**
+- 5 × 3 = 15 (expected: 00001111)
+- 15 × 15 = 225 maximum product (expected: 11100001)
+- 0 × 15 = 0 (expected: 00000000)
 
 ---
 
-## 📁 Project Structure
+### Average Calculator
 
-```
-ALU-Project-Phase-1/
-│
-├── README.md                 # This file
-├── ALU_Core.v               # Main ALU logic and operation modules
-├── ALU_Top.v                # Top-level FPGA interface module
-├── ALU_Project.qpf          # Quartus project file
-├── ALU_Project.qsf          # Quartus settings file
-├── simulation/              # Testbench files
-│   └── ALU_tb.v
-├── docs/                    # Documentation and diagrams
-│   ├── circuit_diagrams/
-│   └── presentation.pdf
-└── output_files/            # Compiled bitstream
-    └── ALU_Project.sof
-```
+This module computes the floor of (A + B) / 2. We use a 4-bit adder to get a 5-bit sum (4 bits + carry), then divide by 2 using a right shift operation.
 
----
+In binary, dividing by 2 is just a right shift - we take bits [4:1] of the 5-bit sum and output them as the 4-bit average. The least significant bit is discarded, which gives us the floor function automatically.
 
-## 🚀 How to Run
+![Average Calculator](image5.png)
+*Figure 5: Average module showing adder output concatenation and right shift*
 
-### Prerequisites
-- Intel Quartus Prime (Lite Edition recommended)
-- DE1-SoC FPGA Board
-- USB Blaster cable
+**Example:** (10 + 6) / 2 = 8
+- Sum = 10000 (binary 16)
+- Right shift gives 1000 (binary 8)
 
-### Compilation Steps
-1. Open Quartus Prime
-2. Load the project file `ALU_Project.qpf`
-3. Compile the design: **Processing → Start Compilation**
-4. Check for errors in the compilation report
-
-### Programming the FPGA
-1. Connect the DE1-SoC board via USB Blaster
-2. Open the Programmer: **Tools → Programmer**
-3. Add the `.sof` file from `output_files/`
-4. Click **Start** to program the device
-
-### Running the Design
-1. Use switches `SW[3:0]` to set operand A
-2. Use switches `SW[7:4]` to set operand B
-3. Use switches `SW[9:8]` to select operation
-4. Observe the result on LEDs `LEDR[7:0]`
+**Test Cases:**
+- (10 + 6) / 2 = 8 (expected: 00001000)
+- (15 + 15) / 2 = 15 (expected: 00001111)
+- (1 + 0) / 2 = 0 rounds down (expected: 00000000)
 
 ---
 
-## 📸 Demonstration
+## What We Learned
 
-> 🖼️ **[INSERT IMAGE: FPGA board showing example operation - Addition of 5+3]**
+Building this ALU helped us understand several important concepts:
 
-> 🖼️ **[INSERT IMAGE: FPGA board showing multiplication example 15×15]**
+- How basic digital circuits like full adders work
+- How to write hardware descriptions in Verilog
+- How to use FPGA development tools (Quartus)
+- How complex circuits are built from simple components
+- The FPGA design flow from code to actual hardware
 
-> 🖼️ **[INSERT IMAGE: FPGA board showing subtraction with negative result]**
-
----
-
-## 🎓 Key Learning Outcomes
-
-1. **Digital Logic Design:** Understanding and implementing fundamental building blocks (adders, multipliers)
-2. **Verilog HDL:** Structural and behavioral modeling techniques
-3. **FPGA Development:** Synthesis, place-and-route, and hardware testing
-4. **Arithmetic Circuits:** Ripple carry addition, 2's complement subtraction, array multiplication
-5. **Modular Design:** Hierarchical design approach for complex systems
+The most challenging part was probably the subtractor because we had to properly handle negative numbers and make sure the sign bit was correct. The multiplier was also complex because of all the partial products that need to be generated and added.
 
 ---
 
-## 🔮 Future Enhancements (Phase 2)
+## References
 
-Phase 2 will include:
-- Sequential logic implementation
-- 7-segment display output
-- Status flags (Zero, Carry, Overflow, Sign)
-- Extended operation set
-- Multi-cycle operations
-
----
-
-## 📚 References
-
-1. "Digital Design and Computer Architecture" - Harris & Harris
-2. "Digital Design" - Morris Mano
+1. "Digital Design and Computer Architecture" by Harris & Harris
+2. "Digital Design" by Morris Mano
 3. Intel DE1-SoC User Manual
 4. Verilog HDL Reference Manual
-5. [NANAD Land](https://nandland.com/learn-verilog/)
+5. Nandland website for Verilog tutorials
 
 ---
 
-**Project Status:** ✅ Phase 1 Complete<br>
-**Last Updated:** November 2025<br>
 **Version:** 1.0
+
+## Upcoming (Phase 2)
