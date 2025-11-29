@@ -4,6 +4,8 @@ Course: CMP 101 - Logic Design
 Institution: Cairo University - Faculty of Engineering - Computer Engineering Department
 Academic Year: 1st Year
 
+------------------------------------------------------------
+
 Team Members:
 - Mohamed Osama
 - Yousuf Safwat
@@ -98,4 +100,6 @@ References
 4. Verilog HDL Reference Manual
 5. Nandland Verilog Tutorials
 
-Version: 1.0
+------------------------------------------------------------
+
+## Version: 1.0
