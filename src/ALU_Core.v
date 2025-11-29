@@ -98,7 +98,7 @@ module ALU_Core(input[3:0] A, input[3:0] B, input[1:0] OP, output reg [7:0] Y);
     always @(*) begin
         case (OP)
             2'b00: Y = {3'b000,COUT,add_out};   // addition
-            2'b01: Y = {3'b000,SIGN,sub_out};   // subtraction
+            2'b01: Y = {SIGN,3'b000,sub_out};   // subtraction
             2'b10: Y = mul_out;   // multiplication
             2'b11: Y = avg_out;   // average 
             default: Y = 8'b0;
