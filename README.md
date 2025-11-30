@@ -83,6 +83,13 @@ We organized the code into several modules that build on each other:
 
 ## Technical Details
 
+### Core Module
+This module is the basic building block of the ALU. It takes two input bits plus a control/carry input and produces the corresponding output bit and status signals using standard logic equations.
+
+![Core Block](Block-diagrams/Core.png)
+*Figure 1: Core module schematic*
+
+
 ### 1-bit Full Adder
 
 This is the foundation for everything. It takes three inputs (two bits plus a carry-in) and produces a sum and carry-out. We used the standard logic equations:
@@ -91,7 +98,7 @@ This is the foundation for everything. It takes three inputs (two bits plus a ca
 - Carry_out = (A AND B) OR (A AND Carry_in) OR (B AND Carry_in)
 
 ![1-bit Full Adder Circuit](Block-diagrams/1bitFulladder.png)
-*Figure 1: 1-bit full adder schematic showing XOR and AND gates*
+*Figure 2: 1-bit full adder schematic showing XOR and AND gates*
 
 
 ### 4-bit Ripple Carry Adder
@@ -99,7 +106,7 @@ This is the foundation for everything. It takes three inputs (two bits plus a ca
 We connected four 1-bit adders in a chain where the carry-out of each adder feeds into the carry-in of the next one. This is called a ripple carry adder because the carry "ripples" through from right to left.
 
 ![4-bit Ripple Carry Adder](Block-diagrams/4bitFulladder.png)
-*Figure 2: 4-bit ripple carry adder showing the chain of four 1-bit full adders with carry propagation*
+*Figure 3: 4-bit ripple carry adder showing the chain of four 1-bit full adders with carry propagation*
 
 For example: 10 + 6 = 16
 - A = 1010, B = 0110
@@ -119,7 +126,7 @@ We implemented subtraction using the 2's complement method. The module computes 
 The key challenge is handling negative results. When A < B, the result is negative and comes out in 2's complement form. We detect this by checking the carry-out bit - no carry means the result is negative. For negative results, we convert back to magnitude form by taking the 2's complement again and setting a sign bit.
 
 ![4-bit Subtractor Block Diagram](Block-diagrams/4bitSubtractor.png)
-*Figure 3: Subtractor block diagram showing 2's complement logic and conditional complement*
+*Figure 4: Subtractor block diagram showing 2's complement logic and conditional complement*
 
 **Example:** 3 - 9 = -6 gives output 00010110 (bit 4 is the sign bit, lower 4 bits show magnitude 6)
 
@@ -137,7 +144,7 @@ We built an array multiplier that generates partial products and adds them toget
 We use 16 AND gates (4×4 grid) to generate all partial products simultaneously, then three 4-bit adders to sum them progressively. The output is 8 bits since 4-bit × 4-bit can produce up to 8 bits (max: 15 × 15 = 225).
 
 ![4x4 Multiplier](Block-diagrams/4bitMultiplier.png)
-*Figure 4: 4×4 array multiplier showing AND gate array and cascade of adders*
+*Figure 5: 4×4 array multiplier showing AND gate array and cascade of adders*
 
 **Example:** 5 × 3 = 15
 - Generates partial products based on bits of B
@@ -157,7 +164,7 @@ This module computes the floor of (A + B) / 2. We use a 4-bit adder to get a 5-b
 In binary, dividing by 2 is just a right shift - we take bits [4:1] of the 5-bit sum and output them as the 4-bit average. The least significant bit is discarded, which gives us the floor function automatically.
 
 ![Average Calculator](Block-diagrams/Average4bit.png)
-*Figure 5: Average module showing adder output concatenation and right shift*
+*Figure 6: Average module showing adder output concatenation and right shift*
 
 **Example:** (10 + 6) / 2 = 8
 - Sum = 10000 (binary 16)
