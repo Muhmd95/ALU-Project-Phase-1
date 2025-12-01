@@ -76,7 +76,7 @@ endmodule
 //---------------------------------------------------------
 // MAIN ALU CORE
 //---------------------------------------------------------
-module ALU_Core(input[3:0] A, input[3:0] B, input[1:0] OP, output reg [7:0] Y);
+module ALU_Core(input[3:0] A, input[3:0] B, input[1:0] OP, output [7:0] Y);
 
     wire [3:0] add_out;
     wire [3:0] sub_out;
@@ -90,19 +90,29 @@ module ALU_Core(input[3:0] A, input[3:0] B, input[1:0] OP, output reg [7:0] Y);
     Mul4bit u_mul (.A(A), .B(B), .Y(mul_out));
     Average4bit u_avg (.A(A), .B(B), .avg(avg_out));
 
+    //wires for Y
+    wire [7:0] add_res = {3'b000,COUT,add_out};
+    wire [7:0] sub_rea = {SIGN,3'b000,sub_out};
+
+    assign Y = 
+           (OP == 2'b00) ? add_res :
+           (OP == 2'b01) ? sub_res :
+           (OP == 2'b10) ? mul_out :
+                           avg_out;
+
 
 
     //-----------------------------------------------------
     // AlWAYS BLOCK
     //-----------------------------------------------------
-    always @(*) begin
-        case (OP)
-            2'b00: Y = {3'b000,COUT,add_out};   // addition
-            2'b01: Y = {SIGN,3'b000,sub_out};   // subtraction
-            2'b10: Y = mul_out;   // multiplication
-            2'b11: Y = avg_out;   // average 
-            default: Y = 8'b0;
-        endcase
-    end
+    //always @(*) begin
+        //case (OP)
+            //2'b00: Y = {3'b000,COUT,add_out};   // addition
+            //2'b01: Y = {SIGN,3'b000,sub_out};   // subtraction
+            //2'b10: Y = mul_out;   // multiplication
+            //2'b11: Y = avg_out;   // average 
+            //default: Y = 8'b0;
+        //endcase
+    //end
 
 endmodule
